@@ -11,9 +11,19 @@ export default function Main(){
     async function Summarize(file:File) {
         try{
             const formData = new FormData();
-            formData.append("pdf", file);
-            const m = axios.post("http://localhost:3000/upload", formData);
-            setResponse((await m).data.message);
+            formData.append("pdf", file); // key must match backend
+
+            const res = await axios.post(
+                "http://localhost:3000/upload",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
+
+            setResponse(res.data.message);
         }
         catch(error){
             if(isAxiosError(error)){
@@ -42,12 +52,11 @@ export default function Main(){
                             setMessage("Please press the button to get the summary");
                             setPdfFile(file);
                             setSelectedPdf(true);
-                            Summarize(file);
                         }
                     }} type="file" accept=".pdf" className="hidden" ></input>
                     <div className="text-sm font-light text-gray-500 text-center max-w-50 truncate" title={pdfFile ? pdfFile.name : ""}>{pdfFile ? pdfFile.name : "PDF files only (Max 20MB)"}</div>
                 </label>
-                <Button text={selectedPdf?"Summarize":"Select a file first"} onClick={()=>{}} ></Button>
+                <Button text={selectedPdf?"Summarize":"Select a file first"} onClick={()=>{if(pdfFile)Summarize(pdfFile)}} ></Button>
             </div>
             <div className="w-full">
                 {response&&<MessageCard message={response}></MessageCard>}
