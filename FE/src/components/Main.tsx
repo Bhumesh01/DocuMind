@@ -8,11 +8,13 @@ export default function Main(){
     const [message, setMessage] = useState<string>("Please Select Your Pdf File");
     const [selectedPdf, setSelectedPdf] = useState<boolean>(false);
     const [response, setResponse] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     async function Summarize(file:File) {
         try{
             const formData = new FormData();
             formData.append("pdf", file); // key must match backend
-
+            setLoading(true);
+            setResponse("Summarizing...")
             const res = await axios.post(
                 "http://localhost:3000/upload",
                 formData,
@@ -24,6 +26,7 @@ export default function Main(){
             );
 
             setResponse(res.data.message);
+            setLoading(false);
         }
         catch(error){
             if(isAxiosError(error)){
@@ -32,8 +35,8 @@ export default function Main(){
         }
     }
     return(
-        <div className="flex justify-center items-center gap-5 flex-col">
-            <div className="bg-surface  flex h-fit justify-start px-4 py-6 items-center flex-col rounded-2xl w-fit gap-2">
+        <div className="flex justify-center items-center gap-5 w-md flex-col">
+            <div className="bg-surface  flex h-fit justify-start px-4 py-6 items-center flex-col rounded-2xl w-md gap-2">
                 <h1 className="text-4xl font-semibold">Analyze Your Pdf</h1>
                 <div className="text-indigo-700 font-medium">{message}</div>
                 <label className="w-60 mt-5 mb-5 h-50 border-2 border-indigo-800 border-dotted rounded-2xl flex items-center justify-center gap-2 flex-col hover:bg-indigo-100">
@@ -59,7 +62,7 @@ export default function Main(){
                 <Button text={selectedPdf?"Summarize":"Select a file first"} onClick={()=>{if(pdfFile)Summarize(pdfFile)}} ></Button>
             </div>
             <div className="w-full">
-                {response&&<MessageCard message={response}></MessageCard>}
+                {response&&<MessageCard setResponse={setResponse} message={response}></MessageCard>}
             </div>
         </div>
     )
