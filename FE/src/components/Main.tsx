@@ -12,17 +12,12 @@ export default function Main(){
     async function Summarize(file:File) {
         try{
             const formData = new FormData();
-            formData.append("pdf", file); // key must match backend
+            formData.append("pdf", file); 
             setLoading(true);
             setResponse("Summarizing...")
             const res = await axios.post(
                 "http://localhost:3000/upload",
                 formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
-                }
             );
 
             setResponse(res.data.message);
