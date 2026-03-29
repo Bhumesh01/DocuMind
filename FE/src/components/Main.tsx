@@ -5,6 +5,7 @@ import axios, {isAxiosError} from "axios";
 import MessageCard from "./Card";
 export default function Main(){
     const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [inputKey, setInputKey] = useState<number>(0);
     const [message, setMessage] = useState<string>("Please Select Your Pdf File");
     const [selectedPdf, setSelectedPdf] = useState<boolean>(false);
     const [response, setResponse] = useState<string>("");
@@ -16,11 +17,15 @@ export default function Main(){
             setLoading(true);
             setResponse("Summarizing...")
             const res = await axios.post(
-                "http://localhost:3000/upload",
+                "http://localhost:3000/api/v1/upload",
                 formData,
             );
 
             setResponse(res.data.message);
+            setInputKey((prev)=>prev+1);
+            setSelectedPdf(false);
+            setPdfFile(null); 
+            setMessage("Please Select Your Pdf File"); 
             setLoading(false);
         }
         catch(error){
@@ -37,7 +42,7 @@ export default function Main(){
                 <label className="w-60 mt-5 mb-5 h-50 border-2 border-indigo-800 border-dotted rounded-2xl flex items-center justify-center gap-2 flex-col hover:bg-indigo-100">
                     <img src={drop} alt="Drop Icon"></img>
                     <div>Click to upload</div>
-                    <input onChange={(event)=>{
+                    <input key={inputKey} onChange={(event)=>{
                         setSelectedPdf(false);
                         setPdfFile(null);
                         const files = event.target.files;
@@ -54,7 +59,7 @@ export default function Main(){
                     }} type="file" accept=".pdf" className="hidden" ></input>
                     <div className="text-sm font-light text-gray-500 text-center max-w-50 truncate" title={pdfFile ? pdfFile.name : ""}>{pdfFile ? pdfFile.name : "PDF files only (Max 20MB)"}</div>
                 </label>
-                <Button text={selectedPdf?"Summarize":"Select a file first"} onClick={()=>{if(pdfFile)Summarize(pdfFile)}} ></Button>
+                <Button disabled={loading} text={selectedPdf?"Summarize":"Select a file first"} onClick={()=>{if(pdfFile)Summarize(pdfFile)}} ></Button>
             </div>
             <div className="w-full">
                 {response&&<MessageCard setResponse={setResponse} message={response}></MessageCard>}
