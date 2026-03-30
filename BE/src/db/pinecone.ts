@@ -10,24 +10,15 @@ const pc = new Pinecone({
 
 const index = pc.index("documind"); 
 
-const dummyVector = Array(1024).fill(0.5);
-
-await index.upsert({
-  records: [
-    {
-      id: 'test',
-      values: dummyVector, 
-      metadata: {
-      text: "This is a test chunk",
-    },
-    },
-  ],
-});
-
-const result = await index.query({
-  vector: dummyVector,
-  topK: 3,
-  includeMetadata: true,
-});
-
-console.log(result);
+export default async function insertChunks(chunks: string[]){
+  try {
+    await index.upsertRecords({
+      records: chunks.map((chunk, i) => ({
+        _id: `chunk-${i}`,
+        text: chunk,
+      })),
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
