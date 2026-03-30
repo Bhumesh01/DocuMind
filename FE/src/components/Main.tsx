@@ -26,12 +26,15 @@ export default function Main(){
             setSelectedPdf(false);
             setPdfFile(null); 
             setMessage("Please Select Your Pdf File"); 
-            setLoading(false);
         }
         catch(error){
             if(isAxiosError(error)){
                 setResponse("Error Summarizing")
             }
+            setMessage("Something went wrong. Try again.");
+        }
+        finally{
+            setLoading(false);
         }
     }
     return(
