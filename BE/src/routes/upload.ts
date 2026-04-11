@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import path from "path";
-import getSummary from "../services/summarize.js";
+import {getSummary} from "../services/summarize.js";
 import createChunks from "../services/createChunks.js";
 import {insertChunks} from "../db/pinecone.js";
 
