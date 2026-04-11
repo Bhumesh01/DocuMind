@@ -28,26 +28,34 @@ export async function getSummary(path: string){
     });
     return response.text;
 }
-export async function queryUsingText(data: string[]){
+export async function queryUsingText(context: string[], query: string){
     if(!api_key){
         return "Error";
     }
     const ai = new GoogleGenAI({ apiKey: api_key });
+    const joinedContext = context.join("\n\n");
     const contents = [
-        { 
-            text: "Summarize this document in clean markdown format with headings, bullet points, and short paragraphs."
-        },
-        {
-            inlineData: {
-                mimeType: 'application/pdf',
-                data: data.join("\n\n")
-            }
+        { text: `
+            You are an expert assistant.
+                    
+            Answer the question using ONLY the provided context.
+                    
+            Context:
+            ${joinedContext}
+                    
+            Question:
+            ${query}
+                    
+            Rules:
+            - Be concise
+            - Use markdown formatting
+            - If answer is not in context, say "Not found in document"
+            `
         }
     ];
-
     const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: contents
+    model: "gemini-3-flash-preview",
+        contents: contents,
     });
     return response.text;
 }

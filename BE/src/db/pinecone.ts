@@ -23,20 +23,21 @@ export async function insertChunks(chunks: string[]){
   }
 }
 
-export async function searchText(text: string):Promise<string[]|undefined>{
+export async function searchText(query: string):Promise<string[]|undefined>{
   try{
     const response = await index.searchRecords({
       query: {
         topK: 2,
-        inputs: { text: text },
+        inputs: { text:  query },
       },
     });
 
     const hits = response.result.hits;
     const extractedText = hits.map(hit => (hit.fields as { text: string }).text);
+    console.log(extractedText);
     return extractedText;
   }
   catch(err){
-
+    console.error(err);
   }
 }
