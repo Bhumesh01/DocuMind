@@ -10,7 +10,7 @@ const pc = new Pinecone({
 
 const index = pc.index("documind"); 
 
-export default async function insertChunks(chunks: string[]){
+export async function insertChunks(chunks: string[]){
   try {
     await index.upsertRecords({
       records: chunks.map((chunk, i) => ({
@@ -20,5 +20,22 @@ export default async function insertChunks(chunks: string[]){
     });
   } catch (err) {
     console.error(err);
+  }
+}
+
+export async function searchText(text: string[]){
+  try{
+    const response = await index.searchRecords({
+      query: {
+        topK: 2,
+        inputs: { text: text },
+      },
+    });
+
+    console.log(response);
+    return response;
+  }
+  catch(err){
+
   }
 }

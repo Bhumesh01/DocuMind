@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import getSummary from "../services/summarize.js";
 import createChunks from "../services/createChunks.js";
-import insertChunks from "../db/pinecone.js";
+import {insertChunks} from "../db/pinecone.js";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
