@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-console.log(PINECONE_API_KEY)
+// console.log(PINECONE_API_KEY)
 const pc = new Pinecone({
   apiKey: PINECONE_API_KEY!,
 });
@@ -11,13 +11,20 @@ const pc = new Pinecone({
 const index = pc.index("documind"); 
 
 export async function insertChunks(chunks: string[]){
+  const BATCH_SIZE = 96;
   try {
-    await index.upsertRecords({
-      records: chunks.map((chunk, i) => ({
-        _id: `chunk-${i}`,
-        text: chunk,
-      })),
-    });
+    for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
+      const batch = chunks.slice(i, i + BATCH_SIZE);
+
+      await index.upsertRecords({
+        records: batch.map((chunk, j) => ({
+          _id: `chunk-${i + j}`,
+          text: chunk,
+        })),
+      });
+
+      console.log(`Inserted batch ${i / BATCH_SIZE + 1}`);
+    }
   } catch (err) {
     console.error(err);
   }
