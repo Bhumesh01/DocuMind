@@ -2,6 +2,7 @@ import axios from "axios";
 import Button from "./Button";
 import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import loadingSpinner from "../assets/spinner.svg"
 export default function Chat(){
     const queryRef = useRef<HTMLInputElement>(null);
     const [message, setMessage] = useState<string>("");
@@ -47,7 +48,15 @@ export default function Chat(){
                           sendQuery();
                         }
                     }} className="flex-1/9">
-                        <Button text={`${loading?"⏳":"➤"}`} disabled={loading} onClick={sendQuery}></Button>
+                        {
+                            loading?
+                            (
+                                <img  className="bg-indigo-500 hover:bg-indigo-700 rounded-2xl " src={loadingSpinner} alt="loading spinner"></img>
+                            ):
+                            (
+                                <Button text="➤" disabled={loading} onClick={sendQuery}></Button>
+                            )
+                        }
                     </div>
                 </div>
             </div>
